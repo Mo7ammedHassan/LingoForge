@@ -1,6 +1,12 @@
 # LingoForge — أداة التعريب التلقائية للألعاب
 
-**LingoForge** هي أداة تلقائية لتعريب ألعاب الحاسوب إلى اللغة العربية بمجرد تحديد مجلد اللعبة، دون الحاجة إلى تعديل ملفات الأصول الثابتة (`.assets` / `.pak` / `.pck`) أو تثبيت أي مكتبات Python خارجية (`pip`).
+![Python](https://img.shields.io/badge/Python-3.9%2B-blue?logo=python&logoColor=white)
+![Dependencies](https://img.shields.io/badge/Dependencies-None%20(Stdlib)-brightgreen)
+![License](https://img.shields.io/badge/License-GPL--3.0-orange)
+![Platform](https://img.shields.io/badge/Platform-Windows-0078D6?logo=windows&logoColor=white)
+![Engines](https://img.shields.io/badge/Engines-Unity%20%7C%20Unreal%20%7C%20Godot%20%7C%20RPG%20Maker-purple)
+
+**LingoForge** هي أداة مجانية ومفتوحة المصدر لتعريب ألعاب الحاسوب إلى اللغة العربية وحقن الخطوط العربية تلقائياً بمجرد تحديد مجلد اللعبة، دون الحاجة إلى تعديل ملفات الأصول الثابتة (`.assets` / `.pak` / `.pck`) أو تثبيت أي مكتبات Python خارجية (`pip`).
 
 تعمل الأداة عبر **واجهة رسومية (`Tkinter`)** و**سطر أوامر (`CLI`)** متكامل، وهي مبنية بمعمارية معيارية قابلة للتوسع (**Plugin / Adapter Architecture**) تفصل بين اكتشاف المحركات، تحليل صيغ الملفات، الترجمة، معالجة العربية، وحقن الخطوط وقت التشغيل.
 
@@ -129,6 +135,7 @@ python main.py translate-captured "C:\Path\To\Game"
 
 ```text
 LingoForge/
+├── LICENSE                      # رخصة البرمجيات الحرة GNU GPL-3.0
 ├── main.py                      # نقطة الدخول الرئيسية (GUI و CLI)
 ├── MEMORY.md                    # التوثيق الهندسي وسجل القرارات التقنية
 ├── arabic/                      # حماية المتغيرات والوسوم ومعالج النصوص العربية (التشبيك و BiDi)
@@ -155,8 +162,42 @@ python -m unittest discover -s tests
 
 ---
 
+## متى تستخدم LingoForge؟ (الأسئلة الشائعة)
+
+### 1. كيف تعرّب ألعاب Unity (Mono وIL2CPP) وتحل مشكلة الحروف العربية المقطّعة والمعكوسة في TextMeshPro وUGUI؟
+تقوم الأداة بتشبيك الحروف العربية وحالات **لام ألف** في نطاق `Presentation Forms-B` مع تطبيق خوارزمية `Visual BiDi` على النصوص، ثم تحقن خط `IBM Plex Sans Arabic` وقت التشغيل في `TMP_Settings.fallbackFontAssets` و`UGUI` و`Legacy IMGUI` عبر `Unity Doorstop` أو `BepInEx` أو `MelonLoader` — بدون تعديل ملفات `.assets` الأصلية لتفادي مشكلة الشاشة السوداء.
+
+### 2. كيف تختلف LingoForge عن أدوات الترجمة الفورية مثل `XUnity.AutoTranslator`؟
+صُمّمت **LingoForge** خصيصاً لتحديات **اللغة العربية** وتعمل عبر **4 محركات مختلفة** (`Unity` و`Unreal Engine` و`Godot` و`RPG Maker`)؛ فهي تكتشف ملفات النصوص والأصول المعبأة وتترجمها مسبقاً على دفعات مع حماية المتغيرات والوسوم، وتشغّل التشبيك والـ BiDi، وتترجم حاقن C# وتنشر `Doorstop` تلقائياً لـ `Mono` و`IL2CPP` دون الحاجة لتثبيت Mod Loader يدوياً، مع نظام نسخ احتياطي ذري واسترجاع كامل بضغطة واحدة.
+
+### 3. هل تعدّل الأداة ملفات الأرشيف الأصلية (`.assets` / `.pak` / `.pck`)؟
+لا؛ تعتمد الأداة التعديل غير المتلف قدر الإمكان: ملف `ArabicOverride.json` وحقن وقت التشغيل في **Unity**، وحزمة إضافية منفصلة `Content/Paks/~mods/z_ArabicL10n_P.pak` في **Unreal Engine**، ومجلد `arabic_l10n/` مع `override.cfg` وحزمة `arabic_patch.pck` في **Godot** — مع الاحتفاظ بسجل `backup_manifest.json` للاسترجاع الكامل عبر `rollback`.
+
+### 4. هل أحتاج لتثبيت مكتبات خارجية أو خبرة برمجية؟
+لا؛ تعمل الأداة بالكامل بمكتبة Python 3 القياسية فقط دون أي حزم `pip`، وتوفر واجهة رسومية بسيطة (`Tkinter`) تكفي فيها خطوة اختيار مجلد اللعبة والضغط على زر التعريب.
+
+---
+
 ## ملاحظات وتنبيهات
 
 - **أنظمة مكافحة الغش (Anti-Cheat):** الألعاب المحمية بأنظمة مثل `EasyAntiCheat` أو `BattlEye` أو `GameGuard` قد تمنع تحميل `Doorstop / DLL` وقت التشغيل. تصدر الأداة تحذيراً تلقائياً عند اكتشاف هذه الأنظمة.
-- **ترخيص الخط المدمج:** الخط المرفق `IBM Plex Sans Arabic` مرخص بموجب رخصة SIL Open Font License المرفقة في [`assets/fonts/OFL.txt`](assets/fonts/OFL.txt).
 - **التوثيق التقني المفصّل:** للاطلاع على التفاصيل المعمارية العميقة لكل محرك وتحديات الحقن التي تمت معالجتها، راجع ملف [`MEMORY.md`](MEMORY.md).
+
+---
+
+## الرخصة (License)
+
+هذا المشروع مرخص بموجب رخصة **GNU GPL-3.0** — راجع ملف [`LICENSE`](LICENSE) للتفاصيل الكاملة.
+
+تحتفظ المكوّنات الخارجية المرفقة بتراخيصها الأصلية:
+- خط `IBM Plex Sans Arabic`: مرخص بموجب رخصة **SIL Open Font License 1.1** في [`assets/fonts/OFL.txt`](assets/fonts/OFL.txt).
+- ثنائيات `Unity Doorstop` (`winhttp.dll`): مرخصة بموجب **LGPL-2.1**.
+
+---
+
+## English Summary
+
+**LingoForge** is a free, open-source Python tool (requiring **zero external `pip` dependencies**) for automatic **Arabic game localization**, **Arabic shaping / Visual BiDi**, and **non-destructive runtime font & text injection** on Windows.
+
+- **Supported Engines:** **Unity** (`Mono` & `IL2CPP`, `x64`/`x86`, Unity `4.x` to `Unity 6`, `TextMeshPro`/`UGUI`/`Legacy IMGUI`/`GUIText` via `Unity Doorstop`, `BepInEx`, or `MelonLoader`), **Unreal Engine** (`UE4`/`UE5` `.locres` & `~mods` `.pak`), **Godot** (`3.x`/`4.x` `.pck` & `SMAZ` decompression), and **RPG Maker** (`MV`/`MZ` data JSONs, CSS font injection, & dialogue plugin).
+- **Safety & Reliability:** Provides both a `Tkinter` **GUI** and a full **CLI** (`scan`, `translate`, `rollback`, `recover`, `update-font`, `translate-captured`), backed by placeholder/tag protection, `Zero-Touch Two-Phase Commit` with `WAL` (`os.fsync`), and `SHA-256` one-click rollback.
